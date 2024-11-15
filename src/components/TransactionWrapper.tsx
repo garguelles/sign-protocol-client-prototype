@@ -51,7 +51,7 @@ export default function TransactionWrapper({ address }: { address: Address }) {
     // const attester = address;
     const res = await client.createAttestation({
       schemaId: '0x40c',
-      linkedAttestationId: '0xb64',
+      // linkedAttestationId: '0xb64',
       // recipients: [recipient],
       data: {
         event: 'AWE2024',
