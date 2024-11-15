@@ -16,8 +16,11 @@ import {
   mintABI,
   mintContractAddress,
 } from '../constants';
+import { EvmChains, SignProtocolClient, SpMode } from '@ethsign/sp-sdk';
+import { useWalletClient } from 'wagmi';
 
 export default function TransactionWrapper({ address }: { address: Address }) {
+  const walletClient = useWalletClient();
   const contracts = [
     {
       address: mintContractAddress,
@@ -35,6 +38,32 @@ export default function TransactionWrapper({ address }: { address: Address }) {
     console.log('Transaction successful', response);
   };
 
+  console.log('address', address);
+
+  const attest = async () => {
+    const client = new SignProtocolClient(SpMode.OnChain, {
+      chain: EvmChains.baseSepolia,
+      walletClient: walletClient.data,
+      rpcUrl:
+        'https://api.developer.coinbase.com/rpc/v1/base-sepolia/OaygFcDgI9xCmmKdSdnQ5f4CJBtzdzqo',
+    });
+    const recipient = '0x8244c1645C1a7890Ef1F0E79AcCf817905Dbcba2';
+    // const attester = address;
+    const res = await client.createAttestation({
+      schemaId: '0x40c',
+      linkedAttestationId: '0xb64',
+      // recipients: [recipient],
+      data: {
+        event: 'AWE2024',
+        reaction: 'Positive',
+        review: 'test review',
+      },
+      indexingValue: address.toLowerCase(),
+    });
+
+    console.log('res', res);
+  };
+
   return (
     <div className="flex w-[450px]">
       <Transaction
@@ -50,6 +79,7 @@ export default function TransactionWrapper({ address }: { address: Address }) {
           <TransactionStatusAction />
         </TransactionStatus>
       </Transaction>
+      <button onClick={attest}>Attest</button>
     </div>
   );
 }
